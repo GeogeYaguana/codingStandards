@@ -1,5 +1,8 @@
 """
-clase item para definir el item
+Este módulo define una clase Item para representar un artículo
+y una clase ShoppinCart para gestionar un carrito de compras.
+Incluye funciones para calcular subtotales, aplicar descuentos
+y calcular el total final.
 """
 
 class Item:
@@ -13,29 +16,34 @@ class Item:
         category (str): La categoría del artículo, por defecto 'general'.
         env_fee (float): Cualquier tasa ambiental asociada al artículo, por defecto 0.
     """
-    def __init__(self, name, price, qty):
+    def __init__(self, name, price, qty, category="general"):
         """
-        Inicializa un nuevo objeto Item con nombre, precio y cantidad.
+        Inicializa un nuevo objeto Item con nombre, precio, cantidad y categoría.
         
         Args:
             name (str): El nombre del producto.
             price (float): El precio del producto.
             qty (int): La cantidad de productos.
+            category (str): La categoría del producto.
         """
         self.name = name
         self.price = price
         self.qty = qty
-        self.category = "general"
+        self.category = category
         self.env_fee = 0
+
+        if self.category == "electronics":
+            self.env_fee = 5  # Tarifa ambiental de $5 por artículo
 
     def get_total(self):
         """
-        Calcula el total del costo del item.
+        Calcula el total del costo del item, incluyendo la tarifa ambiental si aplica.
         
         Returns:
-            float: El costo total del item basado en el precio y la cantidad.
+            float: El costo total del item basado en el precio, cantidad y tarifa ambiental.
         """
-        return self.price * self.qty
+        total_price = (self.price * self.qty) + (self.env_fee * self.qty)
+        return total_price
 
     def get_most_prices(self):
         """
@@ -104,9 +112,9 @@ class ShoppinCart:
             float: El subtotal después de aplicar los descuentos.
         """
         if is_member:
-            subtotal = subtotal - (subtotal * self.member_discount)
+            subtotal -= subtotal * self.member_discount
         if subtotal > 100:
-            subtotal = subtotal - self.big_spender_discount
+            subtotal -= self.big_spender_discount
         return subtotal
 
     def calculate_total(self, is_member, has_coupon):
@@ -124,7 +132,7 @@ class ShoppinCart:
         subtotal = self.apply_discounts(subtotal, is_member)
         total = subtotal + (subtotal * self.tax_rate)
         if has_coupon:
-            total = total - (total * self.coupon_discount)
+            total -= total * self.coupon_discount
         return total
 
 
@@ -136,8 +144,7 @@ def main():
     cart = ShoppinCart()
     item1 = Item("Apple", 1.5, 10)
     item2 = Item("Banana", 0.5, 5)
-    item3 = Item("Laptop", 1000, 1)
-    item3.category = "electronics"
+    item3 = Item("Laptop", 1000, 1, category="electronics")
 
     cart.add_item(item1)
     cart.add_item(item2)
@@ -151,7 +158,7 @@ def main():
     if total < 0:
         print("Error in calculation!")
     else:
-        print("The total price is: $" + str(int(total)))
+        print("The total price is: $" + str(round(total, 2)))
 
 
 if __name__ == "__main__":
